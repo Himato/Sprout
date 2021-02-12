@@ -1,0 +1,44 @@
+@using Sprout.Models
+@using Sprout.Common
+@model Sprout.Models.Dtos.EmployeeDto
+@{
+  ViewData["Title"] = "Add Employee";
+}
+
+<div class="my-4">
+  <h4 class="d-inline-block">Add new Employee</h4>
+</div>
+
+<div class="w-50">
+  <form method="post" asp-route-id="@ViewContext.RouteData.Values["id"]">
+    <div class="mb-3">
+      <label asp-for="Name"></label>
+      <input asp-for="Name" type="text" class="form-control" />
+      <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+      <label asp-for="Birthdate"></label>
+      <input asp-for="Birthdate" type="date" class="form-control" />
+      <span asp-validation-for="Birthdate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+      <label asp-for="Tin"></label>
+      <input asp-for="Tin" type="text" class="form-control" />
+      <span asp-validation-for="Tin" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+      <label asp-for="EmployeeType"></label>
+      <select asp-for="EmployeeType" asp-items="typeof(EmployeeType).ToSelectList()" class="form-control"></select>
+      <span asp-validation-for="EmployeeType" class="text-danger"></span>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger no-bullets"></div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
+</div>
+
+@section Scripts
+{
+  <partial name="_ValidationScriptsPartial" />
+}

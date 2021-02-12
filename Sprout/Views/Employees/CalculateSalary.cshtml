@@ -1,0 +1,57 @@
+@using Sprout.Models
+@using System.Globalization
+@model Sprout.Models.Dtos.SalaryDto
+@{
+  ViewData["Title"] = "Calculate Salary";
+}
+
+<div class="my-4">
+  <h4 class="d-inline-block">Calculate Salary</h4>
+</div>
+
+<div class="w-50">
+  <form asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
+    <input asp-for="EmployeeType" type="hidden" />
+    <div class="mb-3">
+      <div class="input-group">
+        <input asp-for="Salary" class="form-control" placeholder="Salary" type="number" />
+        <span class="input-group-text input-group-text-right">@CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+      </div>
+      <span asp-validation-for="Salary" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+      <input asp-for="Days" class="form-control" placeholder="@(Model.EmployeeType == EmployeeType.Regular ? "Absence Days" : "Working Days")" type="number" />
+      <span asp-validation-for="Days" class="text-danger"></span>
+    </div>
+    @if (Model.EmployeeType == EmployeeType.Regular)
+    {
+      <div class="mb-3">
+        <div class="input-group">
+          <input asp-for="Tax" class="form-control" placeholder="Tax" type="number" />
+          <span class="input-group-text input-group-text-right" id="tax-mark">%</span>
+        </div>
+        <span asp-validation-for="Tax" class="text-danger"></span>
+      </div>
+    }
+    else
+    {
+      <input asp-for="Tax" type="hidden" value="0"/>
+    }
+
+    <div asp-validation-summary="ModelOnly" class="text-danger no-bullets"></div>
+
+    <button class="btn btn-primary" type="submit">Calculate</button>
+  </form>
+
+  @if (ViewData["TotalSalary"] is not null)
+  {
+    <p class="mt-3">
+      <strong>Total Salary: </strong>@Convert.ToDecimal(ViewData["TotalSalary"]).ToString("C")
+    </p>
+  }
+</div>
+
+@section Scripts
+{
+  <partial name="_ValidationScriptsPartial" />
+}

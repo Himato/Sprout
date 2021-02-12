@@ -1,0 +1,116 @@
+@model Sprout.Models.ViewModels.EmployeesViewModel
+@{
+  ViewData["Title"] = "Employees";
+}
+
+<div class="mb-4">
+  <h4 class="d-inline-block">Employees Dashboard</h4>
+  <a href="@Url.Action("Add", "Employees")" class="btn btn-success ml-auto w-max float-right">
+    <i class="fas fa-user-plus"></i>
+  </a>
+</div>
+
+@if (Model.Employees.Any())
+{
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Birthdate</th>
+          <th scope="col">TIN</th>
+          <th scope="col">Type</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var employee in Model.Employees)
+        {
+          <tr>
+            <th scope="row">@employee.Id</th>
+            <td>@employee.Name</td>
+            <td>@employee.Birthdate.ToShortDateString()</td>
+            <td>@employee.Tin</td>
+            <td>@employee.EmployeeType.ToString()</td>
+            <td class="table-actions">
+              <a class="btn btn-success" href="@Url.Action("CalculateSalary", "Employees", new { id = employee.Id })">
+                <i class="fas fa-dollar-sign"></i>
+              </a>
+              <a class="btn btn-primary" href="@Url.Action("Edit", "Employees", new { id = employee.Id })">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button class="btn btn-danger" type="button" onclick="deleteDialog(@employee.Id)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+else
+{
+  <p class="text-center">There's no employees found</p>
+}
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this employee ?</p>
+        <span id="errorMessage" class="text-danger"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button id="yesBtn" type="button" class="btn btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@section Scripts
+{
+  <script>
+    const modal = {
+      modal: $('#deleteModal'),
+      errorMessage: $('#errorMessage'),
+      displayError: function (text) {
+        this.errorMessage.removeClass('hide');
+        this.errorMessage.text(text);
+      },
+      init: function (employeeId) {
+        this.errorMessage.addClass('hide');
+        this.modal.modal('show');
+
+        $('#yesBtn').off('click').on('click', () => {
+          $.ajax({
+            url: `@Url.Action("Delete", "Employees")/${employeeId}`,
+            type: 'GET',
+            dataType: 'json',
+            success: (response) => {
+              if (response.success) {
+                window.location.reload();
+              } else {
+                this.displayError(response.message);
+              }
+            }
+          });
+        });
+      }
+    }
+
+    function deleteDialog(employeeId) {
+      modal.init(employeeId);
+    }
+  </script>
+}
